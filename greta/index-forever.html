@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Greta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        video {
+            max-width: 100%;
+            max-height: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        /* Tap to play overlay for mobile autoplay restrictions */
+        .tap-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        
+        .tap-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .play-icon {
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .play-icon::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 25px solid rgba(255, 255, 255, 0.9);
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            margin-left: 8px;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+        
+        /* NR76 Watermark */
+        .watermark {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 40px;
+            height: auto;
+            opacity: 0.3;
+            z-index: 100;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Tap overlay for mobile -->
+    <div class="tap-overlay" id="tapOverlay">
+        <div class="play-icon"></div>
+    </div>
+    
+    <!-- Video player -->
+    <div class="video-container">
+        <video id="video" playsinline webkit-playsinline loop muted>
+            <source src="video.mp4" type="video/mp4">
+        </video>
+    </div>
+    
+    <!-- NR76 Watermark -->
+    <img src="../logo.png" alt="" class="watermark">
+    
+    <!-- Crafted by NR76 -->
+    
+    <script>
+        const video = document.getElementById('video');
+        const tapOverlay = document.getElementById('tapOverlay');
+        
+        // Try to autoplay
+        video.play().then(() => {
+            // Autoplay worked, hide overlay and unmute
+            tapOverlay.classList.add('hidden');
+            video.muted = false;
+        }).catch(() => {
+            // Autoplay blocked, show tap overlay
+            tapOverlay.addEventListener('click', function() {
+                tapOverlay.classList.add('hidden');
+                video.muted = false;
+                video.play();
+            });
+        });
+    </script>
+</body>
+</html>

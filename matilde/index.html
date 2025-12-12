@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Gift For You</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        /* Gift wrap reveal screen */
+        .gift-wrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .gift-wrap.hidden {
+            opacity: 0;
+            transform: scale(1.1);
+            pointer-events: none;
+        }
+        
+        .gift-box {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .gift-box-body {
+            width: 100%;
+            height: 85%;
+            background: linear-gradient(145deg, #c41e3a, #8b0000);
+            border-radius: 8px;
+            position: absolute;
+            bottom: 0;
+            box-shadow: 0 10px 40px rgba(196, 30, 58, 0.4);
+        }
+        
+        .gift-box-lid {
+            width: 110%;
+            height: 25%;
+            background: linear-gradient(145deg, #d4383d, #a01520);
+            border-radius: 6px;
+            position: absolute;
+            top: 0;
+            left: -5%;
+            z-index: 2;
+        }
+        
+        .gift-ribbon-v {
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffec8b, #ffd700);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+        
+        .gift-ribbon-h {
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(180deg, #ffd700, #ffec8b, #ffd700);
+            position: absolute;
+            top: 35%;
+            z-index: 1;
+        }
+        
+        .gift-bow {
+            width: 50px;
+            height: 30px;
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+        }
+        
+        .bow-loop {
+            width: 25px;
+            height: 25px;
+            background: linear-gradient(145deg, #ffd700, #ffec8b);
+            border-radius: 50% 50% 50% 50%;
+            position: absolute;
+            top: 5px;
+        }
+        
+        .bow-loop.left {
+            left: 0;
+            transform: rotate(-30deg);
+        }
+        
+        .bow-loop.right {
+            right: 0;
+            transform: rotate(30deg);
+        }
+        
+        .bow-center {
+            width: 15px;
+            height: 15px;
+            background: linear-gradient(145deg, #ffd700, #daa520);
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .tap-hint {
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        /* Video container */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        video {
+            max-width: 100%;
+            max-height: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        /* NR76 Watermark */
+        .watermark {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 40px;
+            height: auto;
+            opacity: 0.3;
+            z-index: 100;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Gift wrap overlay -->
+    <div class="gift-wrap" id="giftWrap">
+        <div class="gift-box">
+            <div class="gift-bow">
+                <div class="bow-loop left"></div>
+                <div class="bow-loop right"></div>
+                <div class="bow-center"></div>
+            </div>
+            <div class="gift-box-lid"></div>
+            <div class="gift-ribbon-v"></div>
+            <div class="gift-ribbon-h"></div>
+            <div class="gift-box-body"></div>
+        </div>
+        <div class="tap-hint">Tap to unwrap</div>
+    </div>
+    
+    <!-- Video player -->
+    <div class="video-container">
+        <video id="video" playsinline webkit-playsinline loop>
+            <source src="video.mp4" type="video/mp4">
+        </video>
+    </div>
+    
+    <!-- NR76 Watermark -->
+    <img src="../logo.png" alt="" class="watermark">
+    
+    <!-- Crafted by NR76 -->
+    
+    <script>
+        const giftWrap = document.getElementById('giftWrap');
+        const video = document.getElementById('video');
+        
+        giftWrap.addEventListener('click', function() {
+            giftWrap.classList.add('hidden');
+            video.play();
+        });
+        
+        // Preload video
+        video.load();
+    </script>
+</body>
+</html>
